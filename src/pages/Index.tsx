@@ -5,6 +5,7 @@ import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import Icon from '@/components/ui/icon';
+import CandyShooter from '@/components/CandyShooter';
 
 interface Character {
   id: number;
@@ -39,6 +40,8 @@ interface Achievement {
 
 const Index = () => {
   const [selectedCharacter, setSelectedCharacter] = useState<number>(1);
+  const [showGame, setShowGame] = useState(false);
+  const [highScore, setHighScore] = useState(1234);
 
   const characters: Character[] = [
     { id: 1, name: 'GingerBrave', candy: '🍪 Cookie Blast', effect: 'Тройной выстрел печеньками', emoji: '🍪', color: 'candy-yellow' },
@@ -119,6 +122,26 @@ const Index = () => {
           </TabsList>
 
           <TabsContent value="home" className="space-y-6">
+            {showGame ? (
+              <div className="space-y-4">
+                <Button
+                  onClick={() => setShowGame(false)}
+                  variant="outline"
+                  className="mb-4 rounded-full"
+                >
+                  <Icon name="ArrowLeft" className="w-4 h-4 mr-2" />
+                  Назад в меню
+                </Button>
+                <CandyShooter
+                  character={characters.find(c => c.id === selectedCharacter)!}
+                  onGameOver={(score) => {
+                    if (score > highScore) {
+                      setHighScore(score);
+                    }
+                  }}
+                />
+              </div>
+            ) : (
             <Card className="p-8 bg-white/95 backdrop-blur-sm border-4 border-candy-pink rounded-3xl shadow-2xl">
               <div className="text-center space-y-6">
                 <div className="text-8xl mb-4 animate-pulse-glow">
@@ -132,13 +155,14 @@ const Index = () => {
                 </p>
                 <Button 
                   size="lg" 
+                  onClick={() => setShowGame(true)}
                   className="bg-gradient-to-r from-candy-pink to-candy-yellow text-white text-2xl px-12 py-8 rounded-full shadow-xl hover:scale-105 transition-transform font-heading"
                 >
                   ИГРАТЬ! 🎮
                 </Button>
                 <div className="grid grid-cols-3 gap-4 mt-8">
                   <div className="bg-candy-pink/20 p-4 rounded-2xl">
-                    <div className="text-3xl font-bold text-candy-pink">1,234</div>
+                    <div className="text-3xl font-bold text-candy-pink">{highScore.toLocaleString()}</div>
                     <div className="text-sm text-gray-600">Лучший счёт</div>
                   </div>
                   <div className="bg-candy-yellow/20 p-4 rounded-2xl">
@@ -152,6 +176,7 @@ const Index = () => {
                 </div>
               </div>
             </Card>
+            )}
           </TabsContent>
 
           <TabsContent value="characters" className="space-y-4">
